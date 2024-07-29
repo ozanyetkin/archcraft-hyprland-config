@@ -6,23 +6,45 @@
 
 # Colors
 background='#000000'
-foreground='#fdf6e3'
-color0='#263640'
-color1='#ec7875'
-color2='#61c766'
-color3='#fdd835'
-color4='#42a5f5'
-color5='#ba68c8'
-color6='#4dd0e1'
-color7='#bfbaac'
-color8='#4a697d'
-color9='#fb8784'
-color10='#70d675'
-color11='#ffe744'
-color12='#51b4ff'
-color13='#c979d7'
-color14='#5cdff0'
-color15='#fdf6e3'
+foreground='#eeffff'
+color0='#263238'
+color1='#f07178'
+color2='#c3e88d'
+color3='#ffcb6b'
+color4='#82aaff'
+color5='#c792ea'
+color6='#89ddff'
+color7='#eeffff'
+color8='#263238'
+color9='#f07178'
+color10='#c3e88d'
+color11='#ffcb6b'
+color12='#82aaff'
+color13='#c792ea'
+color14='#89ddff'
+color15='#ffffff'
 
 # Wallpaper
 wallpaper="$HOME/.config/hypr/wallpapers/wallpaper_black.jpg"
+
+{
+    "name": "Material",
+    "background": "#263238",
+    "foreground": "#eeffff",
+    "black": "#000000",
+    "blue": "#82aaff",
+    "brightBlack": "#546e7a",
+    "brightBlue": "#82aaff",
+    "brightCyan": "#89ddff",
+    "brightGreen": "#c3e88d",
+    "brightPurple": "#c792ea",
+    "brightRed": "#f07178",
+    "brightWhite": "#ffffff",
+    "brightYellow": "#ffcb6b",
+    "cyan": "#89ddff",
+    "green": "#c3e88d",
+    "purple": "#c792ea",
+    "red": "#f07178",
+    "white": "#ffffff",
+    "yellow": "#ffcb6b"
+}
