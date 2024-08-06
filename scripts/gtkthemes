@@ -4,10 +4,10 @@
 ##
 ## Set GTK Themes, Icons, Cursor and Fonts
 
-THEME='Yetkin'
+THEME='Yetkin-Material'
 ICONS='Luv-Folders-Dark'
 FONT='Noto Sans 9'
-CURSOR='Sweet'
+CURSOR='Pear'
 
 SCHEMA='gsettings set org.gnome.desktop.interface'
 
