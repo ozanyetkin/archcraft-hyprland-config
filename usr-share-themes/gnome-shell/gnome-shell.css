@@ -2628,6 +2628,7 @@ StEntry StLabel.hint-text, .popup-menu .search-entry StLabel.hint-text {
   box-shadow: 0 3px 8px -5px rgba(0, 0, 0, 0.12);
   margin: 6px 6px 8px;
   font-size: 10pt;
+  background-color: #000000;
 }
 
 .popup-menu .popup-menu-content {

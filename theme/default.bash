@@ -26,25 +26,3 @@ color15='#ffffff'
 
 # Wallpaper
 wallpaper="$HOME/.config/hypr/wallpapers/wallpaper_black.jpg"
-
-{
-    "name": "Material",
-    "background": "#263238",
-    "foreground": "#eeffff",
-    "black": "#000000",
-    "blue": "#82aaff",
-    "brightBlack": "#546e7a",
-    "brightBlue": "#82aaff",
-    "brightCyan": "#89ddff",
-    "brightGreen": "#c3e88d",
-    "brightPurple": "#c792ea",
-    "brightRed": "#f07178",
-    "brightWhite": "#ffffff",
-    "brightYellow": "#ffcb6b",
-    "cyan": "#89ddff",
-    "green": "#c3e88d",
-    "purple": "#c792ea",
-    "red": "#f07178",
-    "white": "#ffffff",
-    "yellow": "#ffcb6b"
-}
