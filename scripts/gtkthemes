@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-## Copyright (C) 2020-2024 Aditya Shakya <adi1090x@gmail.com>
+## Copyright (C) 2020-2025 Aditya Shakya <adi1090x@gmail.com>
 ##
 ## Set GTK Themes, Icons, Cursor and Fonts
 
-THEME='Yetkin-Material'
+THEME='Catppuccin-Mocha'
 ICONS='Luv-Folders-Dark'
 FONT='Noto Sans 9'
 CURSOR='Pear'

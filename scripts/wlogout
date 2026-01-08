@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-## Copyright (C) 2020-2024 Aditya Shakya <adi1090x@gmail.com>
+## Copyright (C) 2020-2025 Aditya Shakya <adi1090x@gmail.com>
 ##
-## wlogout with alt layout and style file
+## Wlogout --------------------------------------------------
 
-LAYOUT="$HOME/.config/hypr/wlogout/layout"
-STYLE="$HOME/.config/hypr/wlogout/style.css"
+LAYOUT="$HOME/.config/hyprcat/wlogout/layout"
+STYLE="$HOME/.config/hyprcat/wlogout/style.css"
 
 if [[ ! `pidof wlogout` ]]; then
 	wlogout --layout ${LAYOUT} --css ${STYLE} \

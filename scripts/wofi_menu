@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 
-## Copyright (C) 2020-2024 Aditya Shakya <adi1090x@gmail.com>
+## Copyright (C) 2020-2025 Aditya Shakya <adi1090x@gmail.com>
 ##
-## launch wofi with alt config
+## Wofi Menu ------------------------------------------------
 
-CONFIG="$HOME/.config/hypr/wofi/config"
-STYLE="$HOME/.config/hypr/wofi/style.css"
+CONFIG="$HOME/.config/hyprcat/wofi/config"
+STYLE="$HOME/.config/hyprcat/wofi/style.css"
 
 if [[ ! `pidof wofi` ]]; then
 	wofi --show drun --prompt 'Search...' --conf ${CONFIG} --style ${STYLE}

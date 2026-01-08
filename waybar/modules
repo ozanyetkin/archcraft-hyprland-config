@@ -1,4 +1,4 @@
-// Copyright (C) 2020-2024 Aditya Shakya <adi1090x@gmail.com>
+// Copyright (C) 2020-2025 Aditya Shakya <adi1090x@gmail.com>
 //
 // Waybar modules configuration
 {
@@ -10,14 +10,10 @@
         //"device": "amdgpu_bl0",
         "format": "{icon} {percent}%",
         "format-icons": ["", "", "", ""],
-		// Commands to execute on events
-        "on-click": "",
-        "on-click-middle": "",
-        "on-click-right": "",
-        "on-update": "",
-        "on-scroll-up": "light -A 5%",
-        "on-scroll-down": "light -U 5%",
+        //"on-scroll-up": "light -A 5%",
+        //"on-scroll-down": "light -U 5%",
         "smooth-scrolling-threshold": 1,
+        "tooltip": false,
     },
 
 	// waybar-battery
@@ -59,7 +55,7 @@
         "tooltip-format": "{controller_alias}\t{controller_address}",
         "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{device_enumerate}",
         "tooltip-format-enumerate-connected": "{device_alias}\t{device_address}",
-        "on-click": "~/.config/hypr/scripts/rofi_bluetooth",
+        "on-click": "~/.config/hyprcat/scripts/rofi_bluetooth",
         "on-click-right": "blueman-manager",
     },
 
@@ -84,23 +80,42 @@
     "custom/themes": {
         "format": "",
         "tooltip": false,
-        "on-click": "$HOME/.config/hypr/theme/theme.sh --pywal",
-        "on-click-right": "$HOME/.config/hypr/theme/theme.sh --default",
+        "on-click": "$HOME/.config/hyprcat/theme/theme.sh --pywal",
+        "on-click-right": "$HOME/.config/hyprcat/theme/theme.sh --default",
+    },
+
+    "custom/lightmode": {
+         "exec": "$HOME/.config/hyprcat/waybar/lightmode",
+         "interval": 1,
+         "format": "{}",
+         "tooltip": false,
+         "on-click": "$HOME/.config/hyprcat/waybar/lightmode --toggle",
+    },
+
+    "custom/sunset": {
+         "exec": "$HOME/.config/hyprcat/waybar/sunset",
+         "interval": 1,
+         "format": "{}",
+         "tooltip": false,
+         "on-click": "$HOME/.config/hyprcat/waybar/sunset --toggle",
+         "on-scroll-up": "hyprctl hyprsunset gamma +5",
+         "on-scroll-down": "hyprctl hyprsunset gamma -5",
+         "smooth-scrolling-threshold": 1,
     },
 
     "custom/menu": {
          "format": "",
          "tooltip": false,
-         //"on-click": "$HOME/.config/hypr/scripts/wofi_menu",
-         "on-click": "$HOME/.config/hypr/scripts/rofi_launcher",
-         "on-click-right": "$HOME/.config/hypr/scripts/rofi_runner",
+         //"on-click": "$HOME/.config/hyprcat/scripts/wofi_menu",
+         "on-click": "$HOME/.config/hyprcat/scripts/rofi_launcher",
+         "on-click-right": "$HOME/.config/hyprcat/scripts/rofi_runner",
     },
 
     "custom/power": {
          "format": "襤",
          "tooltip": false,
-         //"on-click": "$HOME/.config/hypr/scripts/wlogout",
-         "on-click": "$HOME/.config/hypr/scripts/rofi_powermenu",
+         //"on-click": "$HOME/.config/hyprcat/scripts/wlogout",
+         "on-click": "$HOME/.config/hyprcat/scripts/rofi_powermenu",
     },
 
 	// waybar-disk
@@ -117,16 +132,16 @@
            
 	// waybar-spotify
     "custom/spotify": {
-        "exec": "$HOME/.config/hypr/waybar/spotify",
+        "exec": "$HOME/.config/hyprcat/waybar/spotify",
         "interval": 1,
         "format": "{}",
         "tooltip": true,
         "max-length": 40,
-        "on-click": "playerctl play-pause",
-        "on-click-middle": "playerctl previous",
-        "on-click-right": "playerctl next",
-        "on-scroll-up": "playerctl position 05+",
-        "on-scroll-down": "playerctl position 05-",
+        "on-click": "playerctl -p spotify play-pause",
+        "on-click-middle": "playerctl -p spotify previous",
+        "on-click-right": "playerctl -p spotify next",
+        "on-scroll-up": "playerctl -p spotify position 05+",
+        "on-scroll-down": "playerctl -p spotify position 05-",
         "smooth-scrolling-threshold": 1,
     },
 
@@ -145,7 +160,6 @@
         },
         "tooltip-format": "MPD (connected)",
         "tooltip-format-disconnected": "MPD (disconnected)",
-		// Commands to execute on events
         "on-click": "mpc toggle",
         "on-click-middle": "mpc prev",
         "on-click-right": "mpc next",
@@ -187,7 +201,6 @@
             "default": ["", "", ""]
         },
         "scroll-step": 5.0,
-		// Commands to execute on events
         "on-click": "pulsemixer --toggle-mute",
         "on-click-right": "pulsemixer --toggle-mute",
         "smooth-scrolling-threshold": 1,
@@ -203,27 +216,37 @@
          "timeout": 30
     },
 
-	// waybar-wlr-workspaces
+	// hyprland-workspaces
     "hyprland/workspaces": {
          "format": "{icon}",
          "sort-by-number": true,
          "active-only": false,
          "format-icons": {
-             "1": " Terminal",
-             "2": " Internet",
-             "3": " Files",
-             "4": " Codes",
-             "5": " Docs",
-             "6": " Chat",
-             "7": " App",
-             "8": "漣 Set",
-             "9": "",
+             "1": "",
+             "2": "",
+             "3": "",
+             "4": "",
+             "5": "",
+             "6": "漣",
+             "7": "",
+             "8": "",
+             "9": "",
              "10": "ﳴ",
              "urgent": "",
              "focused": "",
              "default": ""
          },
          "on-click": "activate",
+    },
+
+	// hyprland-submap
+    "hyprland/submap": {
+         "format": "{}",
+         "max-length": 10,
+         "justify": "center",
+         "always-on": false,
+         "tooltip": false,
+         "on-click": "hyprctl dispatch submap reset"
     },
 
 	// waybar-tray

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# hypr directory
-DIR="$HOME/.config/hypr"
+# directory
+DIR="$HOME/.config/hyprcat"
 
 # rofi sudo askpass helper
 export SUDO_ASKPASS="$DIR"/scripts/rofi_askpass

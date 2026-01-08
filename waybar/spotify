@@ -1,15 +1,20 @@
 #!/usr/bin/env bash
 
-## Copyright (C) 2020-2024 Aditya Shakya <adi1090x@gmail.com>
+## Copyright (C) 2020-2025 Aditya Shakya <adi1090x@gmail.com>
 ##
-## Script for spotify for waybar
+## Spotify script for waybar --------------------------------
 
-player_status=$(playerctl status 2> /dev/null)
+spotify_status=`playerctl -p spotify status 2>/dev/null`
+md_cmd="playerctl -p spotify metadata"
 
-if [ "$player_status" = "Playing" ]; then
-    echo -e " $(playerctl metadata artist) - $(playerctl metadata title)\nPlaying: $(playerctl metadata artist) - $(playerctl metadata title)\nplaying"
-elif [ "$player_status" = "Paused" ]; then
-    echo -e " $(playerctl metadata artist) - $(playerctl metadata title)\nPaused: $(playerctl metadata artist) - $(playerctl metadata title)\npaused"
+if [[ "$spotify_status" = "Playing" ]]; then
+	if [[ "`$md_cmd title`" == "Advertisement" ]]; then
+		echo -e " Stupid Ads!"
+	else
+		echo -e " $($md_cmd artist) - $($md_cmd title)\nPlaying: $($md_cmd artist) - $($md_cmd title)\nplaying"
+	fi
+elif [[ "$spotify_status" = "Paused" ]]; then
+    echo -e " $($md_cmd artist) - $($md_cmd title)\nPaused: $($md_cmd artist) - $($md_cmd title)\npaused"
 else
-	echo -e " Spotify Offline!\nSpotify Offline.\noffline"
+	echo -e "󰎊 Spotify Offline!\nSpotify Offline.\noffline"
 fi

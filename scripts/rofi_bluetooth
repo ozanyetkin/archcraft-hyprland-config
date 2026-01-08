@@ -17,7 +17,7 @@
 #   Arch repositories: rofi, bluez-utils (contains bluetoothctl)
 
 # Import Current Theme
-DIR="$HOME/.config/hypr"
+DIR="$HOME/.config/hyprcat"
 RASI="$DIR/rofi/bluetooth.rasi"
 
 # Constants

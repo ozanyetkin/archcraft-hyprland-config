@@ -1,12 +1,13 @@
-## Copyright (C) 2020-2024 Aditya Shakya <adi1090x@gmail.com>
+## Copyright (C) 2020-2025 Aditya Shakya <adi1090x@gmail.com>
 ##
 ## Configuration for Alacritty, the GPU enhanced terminal emulator.
 ## It's a very basic and simple config file, for full configuration, Run `man 5 alacritty`
 
 ## GENERAL --------------------------------------------------------
 
+[general]
 ## Import additional configuration files.
-import = ["~/.config/hypr/alacritty/colors.toml", "~/.config/hypr/alacritty/fonts.toml"]
+import = ["~/.config/hyprcat/alacritty/colors.toml", "~/.config/hyprcat/alacritty/fonts.toml"]
 
 ## You can set shell.program to the path of your favorite shell, e.g. /bin/zsh.
 ## Entries in shell.args are passed as arguments to the shell.
@@ -44,7 +45,7 @@ decorations_theme_variant = "None"
 
 ## Number of lines/columns (not pixels) in the terminal.
 [window.dimensions]
-columns = 82
+columns = 95
 lines = 24
 
 ## Blank space added around the window in pixels.

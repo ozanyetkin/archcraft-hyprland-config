@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
 
-## Copyright (C) 2020-2024 Aditya Shakya <adi1090x@gmail.com>
+## Copyright (C) 2020-2025 Aditya Shakya <adi1090x@gmail.com>
 ##
 ## Script To Apply Themes
 
 ## Theme ------------------------------------
-DIR="$HOME/.config/hypr"
+DIR="$HOME/.config/hyprcat"
 
 ## Directories ------------------------------
 PATH_ALAC="$DIR/alacritty"
 PATH_FOOT="$DIR/foot"
+PATH_KITY="$DIR/kitty"
 PATH_MAKO="$DIR/mako"
 PATH_ROFI="$DIR/rofi"
 PATH_WAYB="$DIR/waybar"
@@ -19,6 +20,7 @@ PATH_WOFI="$DIR/wofi"
 ## Source Theme File ------------------------
 CURRENT_THEME="$DIR/theme/current.bash"
 DEFAULT_THEME="$DIR/theme/default.bash"
+LIGHT_THEME="$DIR/theme/light.bash"
 PYWAL_THEME="$HOME/.cache/wal/colors.sh"
 
 ## Check if current file exist
@@ -35,6 +37,17 @@ source_default() {
 	modbackground=(`pastel gradient -n 3 $background $altbackground | pastel format hex`)
 	accent="$color4"
 	notify-send -h string:x-canonical-private-synchronous:sys-notify-dtheme -u normal -i ${PATH_MAKO}/icons/palette.png "Applying Default Theme..."
+}
+
+## Light Theme
+source_light() {
+	cat ${LIGHT_THEME} > ${CURRENT_THEME}
+	source ${CURRENT_THEME}
+	altbackground="`pastel color $background | pastel darken 0.12 | pastel format hex`"
+	altforeground="`pastel color $foreground | pastel lighten 0.30 | pastel format hex`"
+	modbackground=(`pastel gradient -n 3 $background $altbackground | pastel format hex`)
+	accent="$color4"
+	notify-send -h string:x-canonical-private-synchronous:sys-notify-dtheme -u normal -i ${PATH_MAKO}/icons/palette.png "Applying Light Theme..."
 }
 
 ## Random Theme
@@ -84,8 +97,10 @@ source_pywal() {
 
 ## Wallpaper ---------------------------------
 apply_wallpaper() {
-	sed -i -e "s#WALLPAPER=.*#WALLPAPER='$wallpaper'#g" ${DIR}/scripts/wallpaper
-	bash ${DIR}/scripts/wallpaper &
+	sed -i -e "s|\$wallpaper =.*|\$wallpaper = $wallpaper|g" ${DIR}/hyprpaper.conf
+
+	hyprctl hyprpaper preload "$wallpaper"
+	hyprctl hyprpaper wallpaper ",$wallpaper"
 }
 
 ## Alacritty ---------------------------------
@@ -149,6 +164,39 @@ apply_foot() {
 		bright6=${color14:1}   # bright cyan
 		bright7=${color15:1}   # bright white
 	_EOF_
+}
+
+## Kitty ---------------------------------
+apply_kitty() {
+	# kitty : colors
+	cat > ${PATH_KITY}/colors.conf <<- _EOF_
+		## Colors configuration
+		background ${background}
+		foreground ${foreground}
+		selection_background ${foreground}
+		selection_foreground ${background}
+		cursor ${foreground}
+		
+		color0 ${color0}
+		color8 ${color8}
+		color1 ${color1}
+		color9 ${color9}
+		color2 ${color2}
+		color10 ${color10}
+		color3 ${color3}
+		color11 ${color11}
+		color4 ${color4}
+		color12 ${color12}
+		color5 ${color5}
+		color13 ${color13}
+		color6 ${color6}
+		color14 ${color14}
+		color7 ${color7}
+		color15 ${color15}
+	_EOF_
+
+	# reload kitty config
+	kill -SIGUSR1 $(pidof kitty)
 }
 
 ## Mako --------------------------------------
@@ -257,28 +305,73 @@ apply_wofi() {
 		-e "s/@define-color white .*/@define-color white           ${color7};/g"
 }
 
+## GTK Theme ---------------------------------
+apply_gtk() {
+	sed -i "$DIR"/scripts/gtkthemes \
+		-e "s|THEME=.*|THEME='$gtk_theme'|g" \
+		-e "s|ICONS=.*|ICONS='$gtk_icons'|g" \
+		-e "s|FONT=.*|FONT='$gtk_font'|g" \
+		-e "s|CURSOR=.*|CURSOR='$cursor_theme'|g"
+		
+	bash ${DIR}/scripts/gtkthemes &
+}
+
+# Geany -------------------------------------
+apply_geany() {
+	sed -i "$HOME"/.config/geany/geany.conf \
+		-e "s/color_scheme=.*/color_scheme=$geany_colors/g"
+}
+
+## Hyprlock ----------------------------------
+apply_hyprlock() {
+	# convert colors to rgb format
+	col_bg="`pastel color ${background} | pastel format rgb | sed 's/rgb(\(.*\))/rgba(\1, 1.0)/'`"
+	col_oc="`pastel color ${foreground} | pastel format rgb | sed 's/rgb(\(.*\))/rgba(\1, 0.0)/'`"
+	col_ic="`pastel color ${foreground} | pastel format rgb | sed 's/rgb(\(.*\))/rgba(\1, 0.1)/'`"
+	col_cc="`pastel color ${color2} | pastel format rgb | sed 's/rgb(\(.*\))/rgba(\1, 1.0)/'`"
+	col_fc="`pastel color ${color1} | pastel format rgb | sed 's/rgb(\(.*\))/rgba(\1, 1.0)/'`"
+	col_lb="`pastel color ${foreground} | pastel format rgb | sed 's/rgb(\(.*\))/rgba(\1, 0.7)/'`"
+
+	sed -i "$DIR"/hyprlock.conf \
+		-e "s|\$wallpaper =.*|\$wallpaper = $wallpaper|g" \
+		-e "s|\$bg_color =.*|\$bg_color = $col_bg |g" \
+		-e "s|\$outer_color =.*|\$outer_color = $col_oc |g" \
+		-e "s|\$inner_color =.*|\$inner_color = $col_ic |g" \
+		-e "s|\$check_color =.*|\$check_color = $col_cc |g" \
+		-e "s|\$fail_color =.*|\$fail_color = $col_fc |g" \
+		-e "s|\$label_color =.*|\$label_color = $col_lb |g" \
+		-e "s|\$label_color_hex =.*|\$label_color_hex = #${foreground}99 |g"
+}
+
 ## Hyprland --------------------------------------
 apply_hypr() {
 	# hyprland : theme
-	sed -i ${DIR}/hyprtheme.conf \
-		-e "s/\$active_border_col_1 =.*/\$active_border_col_1 = 0xFF${accent:1}/g" \
-		-e "s/\$active_border_col_2 =.*/\$active_border_col_2 = 0xFF${color1:1}/g" \
-		-e "s/\$inactive_border_col_1 =.*/\$inactive_border_col_1 = 0xFF${modbackground[1]:1}/g" \
-		-e "s/\$inactive_border_col_2 =.*/\$inactive_border_col_2 = 0xFF${modbackground[2]:1}/g" \
-		-e "s/\$group_border_active_col =.*/\$group_border_active_col = 0xFF${color2:1}/g" \
-		-e "s/\$group_border_inactive_col =.*/\$group_border_inactive_col = 0xFF${color3:1}/g" \
-		-e "s/\$group_border_locked_active_col =.*/\$group_border_locked_active_col = 0xFF${color1:1}/g" \
-		-e "s/\$group_border_locked_inactive_col =.*/\$group_border_locked_inactive_col = 0xFF${color4:1}/g" \
-		-e "s/\$groupbar_text_color =.*/\$groupbar_text_color = 0xFF${foreground:1}/g"
+	sed -i "${DIR}/config.d/00-hyprtheme.conf" \
+		-e "s/^\(\$active_border_col_1[[:space:]]*=[[:space:]]*\).*/\10xFF${accent:1}/" \
+		-e "s/^\(\$active_border_col_2[[:space:]]*=[[:space:]]*\).*/\10xFF${color1:1}/" \
+		-e "s/^\(\$inactive_border_col_1[[:space:]]*=[[:space:]]*\).*/\10xFF${modbackground[1]:1}/" \
+		-e "s/^\(\$inactive_border_col_2[[:space:]]*=[[:space:]]*\).*/\10xFF${modbackground[2]:1}/" \
+		-e "s/^\(\$group_border_active_col[[:space:]]*=[[:space:]]*\).*/\10xFF${accent:1}/" \
+		-e "s/^\(\$group_border_inactive_col[[:space:]]*=[[:space:]]*\).*/\10xFF${modbackground[1]:1}/" \
+		-e "s/^\(\$group_border_locked_active_col[[:space:]]*=[[:space:]]*\).*/\10xFF${color1:1}/" \
+		-e "s/^\(\$group_border_locked_inactive_col[[:space:]]*=[[:space:]]*\).*/\10xFF${modbackground[1]:1}/" \
+		-e "s/^\(\$groupbar_text_color_active[[:space:]]*=[[:space:]]*\).*/\10xFF${background:1}/" \
+		-e "s/^\(\$groupbar_text_color_inactive[[:space:]]*=[[:space:]]*\).*/\10xFF${foreground:1}/"
 }
 
 ## Source Theme Accordingly -----------------
 if [[ "$1" == '--default' ]]; then
 	source_default
+	apply_gtk
+	apply_geany
+elif [[ "$1" == '--light' ]]; then
+	source_light
+	apply_gtk
+	apply_geany
 elif [[ "$1" == '--pywal' ]]; then
 	source_pywal
 else
-	echo "Available Options: --default  --pywal"
+	echo "Available Options: --default  --light  --pywal"
 	exit 1
 fi
 
@@ -286,9 +379,11 @@ fi
 apply_wallpaper
 apply_alacritty
 apply_foot
+apply_kitty
 apply_mako
 apply_rofi
 apply_waybar
 apply_wlogout
 apply_wofi
+apply_hyprlock
 apply_hypr

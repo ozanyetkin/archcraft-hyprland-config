@@ -1,15 +1,10 @@
 /**
- * Copyright (C) 2020-2024 Aditya Shakya <adi1090x@gmail.com>
+ * Copyright (C) 2020-2025 Aditya Shakya <adi1090x@gmail.com>
  **/
 
 /*****----- Configuration -----*****/
 configuration {
-	modi:                       "drun,run,filebrowser";
     show-icons:                 false;
-    display-drun:               "";
-    display-run:                "";
-    display-filebrowser:        "";
-	drun-display-format:        "{name}";
 }
 
 /*****----- Global Properties -----*****/
@@ -20,11 +15,11 @@ configuration {
 window {
     /* properties for window widget */
     transparency:                "real";
-    location:                    east;
-    anchor:                      east;
+    location:                    center;
+    anchor:                      center;
     fullscreen:                  false;
     width:                       500px;
-    height:                      96%;
+    height:                      50%;
     x-offset:                    -20px;
     y-offset:                    0px;
 
@@ -71,8 +66,8 @@ prompt {
 textbox-prompt-colon {
     enabled:                     true;
     expand:                      false;
-    str:                         "直";
-    padding:                     8px 11px;
+    str:                         "";
+    padding:                     8px 10px;
     border-radius:               12px;
     background-color:            var(urgent);
     text-color:                  @background;

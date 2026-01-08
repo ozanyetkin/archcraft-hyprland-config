@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-## Copyright (C) 2020-2024 Aditya Shakya <adi1090x@gmail.com>
+## Copyright (C) 2020-2025 Aditya Shakya <adi1090x@gmail.com>
 
 # Import Current Theme
-DIR="$HOME/.config/hypr"
+DIR="$HOME/.config/hyprcat"
 RASI="$DIR/rofi/powermenu.rasi"
 CNFR="$DIR/rofi/confirm.rasi"
 
@@ -14,19 +14,19 @@ mesg="Uptime : `uptime -p | sed -e 's/up //g'`"
 # Options
 layout=`cat ${RASI} | grep 'USE_ICON' | cut -d'=' -f2`
 if [[ "$layout" == 'NO' ]]; then
-	option_1=" Lock"
-	option_2=" Logout"
-	option_3=" Suspend"
-	option_4=" Hibernate"
-	option_5=" Reboot"
-	option_6=" Shutdown"
+	option_1=' Lock'
+	option_2=' Logout'
+	option_3=' Suspend'
+	option_4=' Hibernate'
+	option_5=' Reboot'
+	option_6=' Shutdown'
 else
-	option_1=""
-	option_2=""
-	option_3=""
-	option_4=""
-	option_5=""
-	option_6=""
+	option_1=''
+	option_2=''
+	option_3=''
+	option_4=''
+	option_5=''
+	option_6=''
 fi
 cnflayout=`cat ${CNFR} | grep 'USE_ICON' | cut -d'=' -f2`
 if [[ "$cnflayout" == 'NO' ]]; then
@@ -56,6 +56,8 @@ confirm_cmd() {
 	rofi -dmenu \
 		-p 'Confirmation' \
 		-mesg 'Are you Sure?' \
+		-selected-row 1 \
+		-no-click-to-exit \
 		-theme ${CNFR}
 }
 
@@ -77,11 +79,11 @@ confirm_run () {
 # Execute Command
 run_cmd() {
 	if [[ "$1" == '--opt1' ]]; then
-		"$DIR"/scripts/lockscreen
+		hyprlock --config ~/.config/hyprcat/hyprlock.conf
 	elif [[ "$1" == '--opt2' ]]; then
 		confirm_run 'hyprctl dispatch exit 0'
 	elif [[ "$1" == '--opt3' ]]; then
-		confirm_run 'mpc -q pause' 'pulsemixer --mute' "$DIR/scripts/lockscreen" 'systemctl suspend'
+		confirm_run 'mpc -q pause' 'pulsemixer --mute' 'systemctl suspend'
 	elif [[ "$1" == '--opt4' ]]; then
 		confirm_run 'systemctl hibernate'
 	elif [[ "$1" == '--opt5' ]]; then

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-## Copyright (C) 2020-2024 Aditya Shakya <adi1090x@gmail.com>
+## Copyright (C) 2020-2025 Aditya Shakya <adi1090x@gmail.com>
 ##
-## Autostart Programs
+## Autostart Programs ---------------------------------------
 
 # Kill already running process
 _ps=(waybar mako)
@@ -17,17 +17,14 @@ if [[ ! `pidof xfce-polkit` ]]; then
 	/usr/lib/xfce-polkit/xfce-polkit &
 fi
 
-# Set wallpaper
-~/.config/hypr/scripts/wallpaper &
-
 # Apply themes
-~/.config/hypr/scripts/gtkthemes &
+~/.config/hyprcat/scripts/gtkthemes &
 
 # Lauch notification daemon (mako)
-~/.config/hypr/scripts/notifications &
+~/.config/hyprcat/scripts/notifications &
 
 # Lauch statusbar (waybar)
-~/.config/hypr/scripts/statusbar &
+~/.config/hyprcat/scripts/statusbar &
 
 # Start network manager applet
 nm-applet --indicator &

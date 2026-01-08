@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2020-2024 Aditya Shakya <adi1090x@gmail.com>
+ * Copyright (C) 2020-2025 Aditya Shakya <adi1090x@gmail.com>
 */
 
 /** ********** Import Colors ********** **/
@@ -7,7 +7,7 @@
 
 /** ********** Fonts ********** **/
 * {
-    font-family: "JetBrains Mono", "Iosevka Nerd Font", archcraft, sans-serif;
+    font-family: "JetBrains Mono", "Symbols Nerd Font", Iosevka, archcraft, sans-serif;
     font-size: 12px;
 }
 
@@ -83,6 +83,18 @@ window#waybar.hidden {
 }
 #idle_inhibitor.deactivated {
 	background-color: @red;
+}
+
+/** ********** Sunset ********** **/
+
+#custom-sunset {
+    background-color: @background-alt2;
+	color: @foreground;
+	font-size: 16px;
+}
+#custom-sunset.on {
+    background-color: @yellow;
+	color: @background;
 }
 
 /** ********** Tray ********** **/
@@ -211,6 +223,23 @@ window#waybar.hidden {
 #bluetooth.pairable{
 }
 
+/** ********** Submap ********** **/
+
+#submap {
+	background-color: @background-alt2;
+	color: @foreground;
+	font-size: 12px;
+	font-weight: bold;
+}
+#submap.resize {
+	background-color: @selected;
+	color: @background;
+}
+#submap.move {
+	background-color: @selected;
+	color: @background;
+}
+
 /** ********** WLR Desktop ********** **/
 #workspaces {
 	background-color: @background;
@@ -232,10 +261,19 @@ window#waybar.hidden {
 }
 
 /** ********** Custom ********** **/
-#custom-themes, #custom-menu, #custom-power {
+#custom-themes, #custom-menu, #custom-power, #custom-lightmode {
 	border-radius: 12px;
 	margin: 6px 0px;
 	padding: 2px 10px;
+}
+
+#custom-lightmode {
+    background-color: @background-alt2;
+	color: @red;
+}
+#custom-lightmode.on {
+    background-color: @green;
+	color: @background;
 }
 
 #custom-themes {
@@ -268,7 +306,9 @@ window#waybar.hidden {
 #mpd,
 #custom-spotify,
 #idle_inhibitor,
+#custom-sunset,
 #tray,
+#submap,
 #pulseaudio,
 #network,
 #bluetooth {

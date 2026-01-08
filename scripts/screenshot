@@ -1,30 +1,35 @@
 #!/usr/bin/env bash
 
-## Copyright (C) 2020-2024 Aditya Shakya <adi1090x@gmail.com>
+## Copyright (C) 2020-2025 Aditya Shakya <adi1090x@gmail.com>
 ##
 ## Script to take screenshots with grim, slurp (in Wayland)
 
 # Get Colors
-DIR="$HOME/.config/hypr"
+DIR="$HOME/.config/hyprcat"
 background="`cat $DIR/rofi/shared/colors.rasi | grep 'background:' | cut -d':' -f2 | tr -d ' '\;`"
 accent="`cat $DIR/rofi/shared/colors.rasi | grep 'selected:' | cut -d':' -f2 | tr -d ' '\;`"
 
-iDIR="$HOME/.config/hypr/mako/icons"
-
+# Screenshot
 time=`date +%Y-%m-%d-%H-%M-%S`
 dir="`xdg-user-dir PICTURES`/Screenshots"
 file="Screenshot_${time}_${RANDOM}.png"
 
+# Directory
+if [[ ! -d "$dir" ]]; then
+	mkdir -p "$dir"
+fi
+
 # notify and view screenshot
-notify_cmd_shot="notify-send -h string:x-canonical-private-synchronous:sys-notify-shot -u low -i ${iDIR}/picture.png"
+iDIR="$HOME/.config/hyprcat/mako/icons"
 notify_view () {
-	${notify_cmd_shot} "Copied to clipboard."
+	notify_cmd_shot="notify-send -h string:x-canonical-private-synchronous:sys-notify-shot -u low -i ${iDIR}/picture.png"
+	${notify_cmd_shot} 'Copied to clipboard.'
 	paplay /usr/share/sounds/freedesktop/stereo/screen-capture.oga &>/dev/null &
 	viewnior ${dir}/"$file"
 	if [[ -e "$dir/$file" ]]; then
-		${notify_cmd_shot} "Screenshot Saved."
+		${notify_cmd_shot} 'Screenshot Saved.'
 	else
-		${notify_cmd_shot} "Screenshot Deleted."
+		${notify_cmd_shot} 'Screenshot Deleted.'
 	fi
 }
 
@@ -66,10 +71,7 @@ shotarea () {
 	notify_view
 }
 
-if [[ ! -d "$dir" ]]; then
-	mkdir -p "$dir"
-fi
-
+# Execute Command
 if [[ "$1" == "--now" ]]; then
 	shotnow
 elif [[ "$1" == "--in5" ]]; then
@@ -81,7 +83,7 @@ elif [[ "$1" == "--win" ]]; then
 elif [[ "$1" == "--area" ]]; then
 	shotarea
 else
-	echo -e "Available Options : --now --in5 --in10 --win --area"
+	echo -e 'Available Options : --now --in5 --in10 --win --area'
 fi
 
 exit 0

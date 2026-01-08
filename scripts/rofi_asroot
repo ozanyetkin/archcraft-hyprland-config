@@ -1,30 +1,30 @@
 #!/usr/bin/env bash
 
 # Import Current Theme
-DIR="$HOME/.config/hypr"
+DIR="$HOME/.config/hyprcat"
 RASI="$DIR/rofi/asroot.rasi"
 ASROOT="$DIR/scripts/asroot"
 USER=`whoami`
 
 # Theme Elements
 prompt='Root'
-mesg="Run Applications As Root"
-term="alacritty --class alacritty-float,alacritty-float --config-file /home/$USER/.config/hypr/alacritty/alacritty.toml"
+mesg='Run Applications As Root'
+term="alacritty --class alacritty-float,alacritty-float --config-file /home/$USER/.config/hyprcat/alacritty/alacritty.toml"
 
 # Options
 layout=`cat ${RASI} | grep 'USE_ICON' | cut -d'=' -f2`
 if [[ "$layout" == 'NO' ]]; then
-	option_1=" Alacritty"
-	option_2=" Thunar"
-	option_3=" Geany"
-	option_4=" Ranger"
-	option_5=" Vim"
+	option_1=' Alacritty'
+	option_2=' Thunar'
+	option_3=' Geany'
+	option_4=' Ranger'
+	option_5=' Vim'
 else
-	option_1=""
-	option_2=""
-	option_3=""
-	option_4=""
-	option_5=""
+	option_1=''
+	option_2=''
+	option_3=''
+	option_4=''
+	option_5=''
 fi
 
 # Rofi CMD

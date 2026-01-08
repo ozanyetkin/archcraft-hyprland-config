@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 
-## Copyright (C) 2020-2024 Aditya Shakya <adi1090x@gmail.com>
-
-## wlogout actions
+## Copyright (C) 2020-2025 Aditya Shakya <adi1090x@gmail.com>
+##
+## wlogout actions ------------------------------------------
 
 # Ask for confirmation
 cdialog () {
-	yad --title='Confirm?' --borders=15 --center --fixed --undecorated --button=Yes:0 --button=No:1 --text="Are you sure?" --text-align=center
+	yad --title='Confirm?' --borders=15 \
+	--center --fixed --undecorated --button=Yes:0 \
+	--button=No:1 --text="Are you sure?" --text-align=center
 }
 
 if [[ "$1" == '--shutdown' ]]; then
@@ -31,13 +33,12 @@ elif [[ "$1" == '--hibernate' ]]; then
 		exit
     fi
 elif [[ "$1" == '--lock' ]]; then
-	~/.config/hypr/scripts/lockscreen
+	hyprlock --config ~/.config/hyprcat/hyprlock.conf
 elif [[ "$1" == '--suspend' ]]; then
 	cdialog
 	if [[ "$?" == 0 ]]; then
 		mpc -q pause
 		pulsemixer --mute
-		~/.config/hypr/scripts/lockscreen
 		systemctl suspend
     else
 		exit

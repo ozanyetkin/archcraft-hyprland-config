@@ -1,28 +1,37 @@
 # ------------------------------------------------------------------------------
-# Copyright (C) 2020-2024 Aditya Shakya <adi1090x@gmail.com>
+# Copyright (C) 2020-2025 Aditya Shakya <adi1090x@gmail.com>
 #
-# Catppucin Theme
+# Default Theme
 # ------------------------------------------------------------------------------
 
 # Colors
 background='#000000'
-foreground='#eeffff'
-color0='#263238'
-color1='#f07178'
-color2='#c3e88d'
-color3='#ffcb6b'
-color4='#82aaff'
-color5='#c792ea'
-color6='#89ddff'
-color7='#eeffff'
-color8='#263238'
-color9='#f07178'
-color10='#c3e88d'
-color11='#ffcb6b'
-color12='#82aaff'
-color13='#c792ea'
-color14='#89ddff'
-color15='#ffffff'
+foreground='#CDD6F4'
+color0='#45475A'
+color1='#F38BA8'
+color2='#A6E3A1'
+color3='#F9E2AF'
+color4='#89B4FA'
+color5='#F5C2E7'
+color6='#94E2D5'
+color7='#BAC2DE'
+color8='#585B70'
+color9='#F38BA8'
+color10='#A6E3A1'
+color11='#F9E2AF'
+color12='#89B4FA'
+color13='#F5C2E7'
+color14='#94E2D5'
+color15='#A6ADC8'
 
 # Wallpaper
-wallpaper="$HOME/.config/hypr/wallpapers/wallpaper_black.jpg"
+wallpaper="$HOME/.config/hyprcat/wallpapers/wallpaper.png"
+
+# GTK Theme
+gtk_theme='Catppuccin-Mocha'
+gtk_icons='Luv-Folders-Dark'
+gtk_font='Noto Sans 9'
+cursor_theme='Pear'
+
+# Geany
+geany_colors='catppuccin-mocha.conf'
