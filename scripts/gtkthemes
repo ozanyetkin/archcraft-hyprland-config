@@ -7,7 +7,7 @@
 THEME='Catppuccin-Mocha'
 ICONS='Luv-Folders-Dark'
 FONT='Noto Sans 9'
-CURSOR='Pear'
+CURSOR='Sweet'
 
 SCHEMA='gsettings set org.gnome.desktop.interface'
 

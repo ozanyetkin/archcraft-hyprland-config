@@ -67,6 +67,11 @@ window#waybar.hidden {
 	background-color: @cyan;
 }
 
+/** ********** USER ********** **/
+#user {
+	background-color: @yellow;
+}
+
 /** ********** Memory ********** **/
 #memory {
 	background-color: @magenta;
@@ -88,8 +93,8 @@ window#waybar.hidden {
 /** ********** Sunset ********** **/
 
 #custom-sunset {
-    background-color: @background-alt2;
-	color: @foreground;
+    background-color: @foreground;
+	color: @background;
 	font-size: 16px;
 }
 #custom-sunset.on {
@@ -99,7 +104,7 @@ window#waybar.hidden {
 
 /** ********** Tray ********** **/
 #tray {
-	background-color: @background-alt2;
+	background-color: #333333;
 }
 #tray > .passive {
     -gtk-icon-effect: dim;
@@ -300,6 +305,7 @@ window#waybar.hidden {
 #battery,
 #clock,
 #cpu,
+#user,
 #disk,
 #mode,
 #memory,

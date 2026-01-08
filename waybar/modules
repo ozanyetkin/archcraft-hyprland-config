@@ -66,7 +66,7 @@
 		"rotate": 0,
         //"timezone": "America/New_York",
         "tooltip-format": "<big>{:%B %Y}</big>\n<tt><small>{calendar}</small></tt>",
-        "format": " {:%I:%M %p}",
+        "format": " {:%H:%M %p}",
         "format-alt": " {:%a %b %d, %G}"
     },
 
@@ -104,7 +104,7 @@
     },
 
     "custom/menu": {
-         "format": "",
+         "format": " ● ",
          "tooltip": false,
          //"on-click": "$HOME/.config/hyprcat/scripts/wofi_menu",
          "on-click": "$HOME/.config/hyprcat/scripts/rofi_launcher",
@@ -116,6 +116,12 @@
          "tooltip": false,
          //"on-click": "$HOME/.config/hyprcat/scripts/wlogout",
          "on-click": "$HOME/.config/hyprcat/scripts/rofi_powermenu",
+    },
+
+    // waybar-user
+    "user": {
+         "interval": 20,
+         "format": " USER: {user}",
     },
 
 	// waybar-disk
@@ -222,16 +228,16 @@
          "sort-by-number": true,
          "active-only": false,
          "format-icons": {
-             "1": "",
-             "2": "",
-             "3": "",
-             "4": "",
-             "5": "",
-             "6": "漣",
-             "7": "",
-             "8": "",
-             "9": "",
-             "10": "ﳴ",
+             "1": "1",
+             "2": "2",
+             "3": "3",
+             "4": "4",
+             "5": "5",
+             "6": "6",
+             "7": "7",
+             "8": "8",
+             "9": "9",
+             "10": "0",
              "urgent": "",
              "focused": "",
              "default": ""

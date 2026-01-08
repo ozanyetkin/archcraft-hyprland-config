@@ -31,7 +31,7 @@ wallpaper="$HOME/.config/hyprcat/wallpapers/wallpaper.png"
 gtk_theme='Catppuccin-Mocha'
 gtk_icons='Luv-Folders-Dark'
 gtk_font='Noto Sans 9'
-cursor_theme='Pear'
+cursor_theme='Sweet'
 
 # Geany
 geany_colors='catppuccin-mocha.conf'

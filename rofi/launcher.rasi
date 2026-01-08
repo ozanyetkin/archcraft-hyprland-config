@@ -24,7 +24,7 @@ window {
     anchor:                      center;
     fullscreen:                  false;
     width:                       600px;
-    height:                      40%;
+    height:                      30%;
     x-offset:                    20px;
     y-offset:                    0px;
 
