@@ -93,7 +93,7 @@ window#waybar.hidden {
 /** ********** Sunset ********** **/
 
 #custom-sunset {
-    background-color: @foreground;
+    background-color: @yellow;
 	color: @background;
 	font-size: 16px;
 }
@@ -273,8 +273,8 @@ window#waybar.hidden {
 }
 
 #custom-lightmode {
-    background-color: @background-alt2;
-	color: @red;
+    background-color: @blue;
+	color: @background;
 }
 #custom-lightmode.on {
     background-color: @green;

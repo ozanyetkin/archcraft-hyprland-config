@@ -38,9 +38,9 @@ anchor=top-right
 
 # Mako_Colors
 background-color=#000000
-text-color=#CDD6F4
+text-color=#eeffff
 border-color=#101010
-progress-color=over #89B4FA
+progress-color=over #82aaff
 
 [urgency=low]
 border-color=#101010
@@ -51,6 +51,6 @@ border-color=#101010
 default-timeout=5000
 
 [urgency=high]
-border-color=#F38BA8
-text-color=#F38BA8
+border-color=#f07178
+text-color=#f07178
 default-timeout=0
