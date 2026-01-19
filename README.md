@@ -4,7 +4,7 @@
 
 ![Archcraft](./Screenshot_2024-08-06-15-23-39_7082.png)
 
-# Color Palette
+## Color Palette
 
 ```bash
 # Colors
