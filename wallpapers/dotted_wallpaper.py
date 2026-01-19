@@ -1,121 +1,122 @@
+import argparse
+import math
+from pathlib import Path
+
 from PIL import Image, ImageDraw
 
-# ================= CONFIGURATION =================
-# 1. Screen Dimensions
-SCREEN_W = 3840
-SCREEN_H = 2400
-SCALE = 1.5
 
-# 2. Window Manager Settings (Use Logical values, script handles scaling)
-BAR_HEIGHT = 48
-GAP_OUTER = 18  # Space between screen edge and windows
-GAP_INNER = 18  # Space between two windows (Visual size)
-# Note: If your config says "gaps_in 6", the visual gap is often 6+6=12.
-# We use 12 here to ensure the wallpaper gap matches the visual gap.
+def generate_isometric_dots(
+	width: int = 3840,
+	height: int = 2400,
+	background_color: tuple[int, int, int] = (0, 0, 0),
+	dot_color: tuple[int, int, int] = (255, 255, 255),
+	dot_radius: int = 3,
+	spacing: int = 40,
+	margin: int = 80,
+	output: Path | str = "dotted_wallpaper.png",
+) -> Path:
+	"""Generate an isometric grid of dots on a solid background.
 
-# 3. Visuals
-RECURSION_DEPTH = 6  # How many times to split? (5 is usually enough for 4K)
-DOT_SIZE = 2  # Radius (2 = 4px circle)
-DOT_SPACING = 18  # How far apart dots are along the line
-DOT_COLOR = (80, 80, 80)  # Light Grey
-BG_COLOR = (10, 10, 10)  # Deep Dark Grey
+	The grid is a hexagonal/triangular lattice: each row is offset by half the
+	horizontal spacing, and vertical spacing is spacing * sin(60°).
+	All numeric parameters are in pixels.
+	"""
 
-# ================= SETUP =================
-# Convert logical to physical pixels
-bar_phys = int(BAR_HEIGHT * SCALE)
-gap_out_phys = int(GAP_OUTER * SCALE)
-gap_in_phys = int(GAP_INNER * SCALE)
+	img = Image.new("RGB", (width, height), background_color)
+	draw = ImageDraw.Draw(img)
 
-image = Image.new("RGB", (SCREEN_W, SCREEN_H), BG_COLOR)
-draw = ImageDraw.Draw(image)
+	h_spacing = float(spacing)
+	v_spacing = spacing * math.sin(math.radians(60))  # ≈ 0.866 * spacing
 
+	y = float(margin)
+	row_index = 0
 
-# ================= RECURSIVE FUNCTION =================
-def draw_splits(x, y, w, h, depth):
-    if depth == 0:
-        return
+	while y <= height - margin:
+		# Stagger every other row by half the horizontal spacing
+		x = float(margin) + (h_spacing / 2.0 if row_index % 2 else 0.0)
 
-    # --- 1. Calculate Split Coordinates ---
-    # The math: (Width - Gap) / 2
+		while x <= width - margin:
+			left = x - dot_radius
+			top = y - dot_radius
+			right = x + dot_radius
+			bottom = y + dot_radius
+			draw.ellipse((left, top, right, bottom), fill=dot_color)
+			x += h_spacing
 
-    # Vertical Split (splits width)
-    child_w = (w - gap_in_phys) / 2
-    split_x_center = x + child_w + (gap_in_phys / 2)
+		y += v_spacing
+		row_index += 1
 
-    # Horizontal Split (splits height)
-    child_h = (h - gap_in_phys) / 2
-    split_y_center = y + child_h + (gap_in_phys / 2)
-
-    # --- 2. Draw Dots at these Split Lines ---
-
-    # Draw Vertical Line (Line at X, spanning current height)
-    # We iterate along the Y axis of the current block
-    for dy in range(int(y), int(y + h), DOT_SPACING):
-        # Draw dot centered at (split_x_center, dy)
-        draw.ellipse(
-            [
-                split_x_center - DOT_SIZE,
-                dy - DOT_SIZE,
-                split_x_center + DOT_SIZE,
-                dy + DOT_SIZE,
-            ],
-            fill=DOT_COLOR,
-        )
-
-    # Draw Horizontal Line (Line at Y, spanning current width)
-    # We iterate along the X axis of the current block
-    for dx in range(int(x), int(x + w), DOT_SPACING):
-        # Draw dot centered at (dx, split_y_center)
-        draw.ellipse(
-            [
-                dx - DOT_SIZE,
-                split_y_center - DOT_SIZE,
-                dx + DOT_SIZE,
-                split_y_center + DOT_SIZE,
-            ],
-            fill=DOT_COLOR,
-        )
-
-    # --- 3. Recurse ---
-    # We need to simulate splits in all 4 resulting quadrants
-    # to catch every possible window configuration.
-
-    # Top-Left Box
-    draw_splits(x, y, child_w, child_h, depth - 1)
-
-    # Top-Right Box
-    draw_splits(split_x_center + (gap_in_phys / 2), y, child_w, child_h, depth - 1)
-
-    # Bottom-Left Box
-    draw_splits(x, split_y_center + (gap_in_phys / 2), child_w, child_h, depth - 1)
-
-    # Bottom-Right Box
-    draw_splits(
-        split_x_center + (gap_in_phys / 2),
-        split_y_center + (gap_in_phys / 2),
-        child_w,
-        child_h,
-        depth - 1,
-    )
+	output_path = Path(output).expanduser().resolve()
+	output_path.parent.mkdir(parents=True, exist_ok=True)
+	img.save(output_path, format="PNG")
+	return output_path
 
 
-# ================= EXECUTION =================
+def parse_args() -> argparse.Namespace:
+	parser = argparse.ArgumentParser(
+		description="Generate a parametric isometric dotted wallpaper.",
+	)
 
-# Define the "Root" container (The area inside the outer gaps and bar)
-root_x = gap_out_phys
-root_y = bar_phys + gap_out_phys
-root_w = SCREEN_W - (2 * gap_out_phys)
-root_h = SCREEN_H - bar_phys - (2 * gap_out_phys)
+	parser.add_argument("--width", type=int, default=3840, help="Image width in pixels.")
+	parser.add_argument("--height", type=int, default=2400, help="Image height in pixels.")
+	parser.add_argument("--dot-radius", type=int, default=3, help="Dot radius in pixels.")
+	parser.add_argument(
+		"--spacing",
+		type=int,
+		default=40,
+		help="Base spacing between dots (horizontal); vertical spacing is spacing * sin(60°).",
+	)
+	parser.add_argument("--margin", type=int, default=80, help="Margin around the grid in pixels.")
+	parser.add_argument(
+		"--background",
+		type=str,
+		default="0,0,0",
+		help="Background RGB as 'R,G,B' (0-255). Default: 0,0,0 (black)",
+	)
+	parser.add_argument(
+		"--dot-color",
+		type=str,
+		default="255,255,255",
+		help="Dot RGB as 'R,G,B' (0-255). Default: 255,255,255 (white)",
+	)
+	parser.add_argument(
+		"--output",
+		type=str,
+		default="dotted_wallpaper.png",
+		help="Output PNG path.",
+	)
 
-print(f"Generating recursive grid for area: {int(root_w)}x{int(root_h)}")
-print(f"Recursion Depth: {RECURSION_DEPTH}")
+	return parser.parse_args()
 
-draw_splits(root_x, root_y, root_w, root_h, RECURSION_DEPTH)
 
-# Optional: Draw the outer boundary (to see if it matches the outer gap)
-# for px in range(int(root_x), int(root_x + root_w), DOT_SPACING):
-#     draw.ellipse([px-1, root_y-1, px+1, root_y+1], fill=(100,0,0))
+def parse_rgb(value: str) -> tuple[int, int, int]:
+	parts = value.split(",")
+	if len(parts) != 3:
+		raise ValueError(f"Invalid RGB value '{value}', expected 'R,G,B'.")
+	rgb = tuple(int(p) for p in parts)
+	if any(c < 0 or c > 255 for c in rgb):
+		raise ValueError(f"RGB components must be between 0 and 255: {rgb}")
+	return rgb  # type: ignore[return-value]
 
-filename = "recursive_bsp_wallpaper.png"
-image.save(filename)
-print(f"Done! Saved as {filename}")
+
+def main() -> None:
+	args = parse_args()
+
+	background = parse_rgb(args.background)
+	dot_color = parse_rgb(args.dot_color)
+
+	generate_isometric_dots(
+		width=args.width,
+		height=args.height,
+		background_color=background,
+		dot_color=dot_color,
+		dot_radius=args.dot_radius,
+		spacing=args.spacing,
+		margin=args.margin,
+		output=args.output,
+	)
+
+
+if __name__ == "__main__":
+	main()
+
