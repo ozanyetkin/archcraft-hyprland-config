@@ -3,7 +3,7 @@ from PIL import Image, ImageDraw
 # ================= CONFIGURATION =================
 # Physical Screen Resolution
 SCREEN_W = 3840
-SCREEN_H = 2160
+SCREEN_H = 2400
 
 # Layout Configuration (Physical Pixels - Scaled 1.5x)
 # Bar: 32px logical * 1.5 = 48px
