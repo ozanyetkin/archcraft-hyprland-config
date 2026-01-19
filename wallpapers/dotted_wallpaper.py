@@ -88,7 +88,7 @@ def parse_args() -> argparse.Namespace:
 	parser.add_argument("--left-margin", type=int, default=9)
 	parser.add_argument("--right-margin", type=int, default=9)
 	parser.add_argument("--bottom-margin", type=int, default=9)
-	parser.add_argument("--grid-x", type=int, default=24, help="Horizontal grid spacing in pixels")
+	parser.add_argument("--grid-x", type=int, default=21, help="Horizontal grid spacing in pixels")
 	parser.add_argument("--grid-y", type=int, default=18, help="Vertical grid spacing in pixels")
 	parser.add_argument("--dot-diameter", type=int, default=4)
 	parser.add_argument("--output", type=str, default="dotted_wallpaper.png")
