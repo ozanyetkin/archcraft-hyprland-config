@@ -1,75 +1,106 @@
 from PIL import Image, ImageDraw
+import os
 
 # ================= CONFIGURATION =================
-# Physical Screen Resolution
-SCREEN_W = 3840
-SCREEN_H = 2400
+# We define each monitor's specs explicitly based on your output
+MONITORS = [
+    {
+        "name": "DP-1",
+        "width": 3840,
+        "height": 2160,
+        "scale": 1.5,
+        "bar_logical_height": 38,  # From "reserved: 0 38 0 0"
+        "gap_logical": 12,  # 12px visual gap (consistent across setup)
+        "line_width_base": 2,  # Base thickness of lines
+    },
+    {
+        "name": "eDP-1",
+        "width": 1920,
+        "height": 1200,
+        "scale": 1.0,
+        "bar_logical_height": 38,  # From "reserved: 0 38 0 0"
+        "gap_logical": 12,
+        "line_width_base": 2,
+    },
+]
 
-# Layout Configuration (Physical Pixels - Scaled 1.5x)
-# Bar: 32px logical * 1.5 = 48px
-BAR_HEIGHT = 54
-
-# Outer Gap: 12px logical * 1.5 = 18px
-GAP_OUTER = 18
-
-# Inner Gap: 12px logical * 1.5 = 18px
-# (This is the space BETWEEN windows)
-GAP_INNER = 18
-
-# Aesthetic Configuration
-DEPTH = 6  # How many recursive splits to draw (5 is usually plenty)
-LINE_WIDTH = 2  # Thickness of the grid lines (Try 18 to fill the gap entirely)
-LINE_COLOR = (80, 80, 80)  # Grey
-BG_COLOR = (10, 10, 10)  # Black/Dark Grey
-
-# ================= SETUP =================
-image = Image.new("RGB", (SCREEN_W, SCREEN_H), BG_COLOR)
-draw = ImageDraw.Draw(image)
-
-# Define the effective "Tiling Area"
-# The wallpaper lines must be calculated relative to where windows actually go.
-container_x = GAP_OUTER
-container_y = BAR_HEIGHT + GAP_OUTER
-container_w = SCREEN_W - (GAP_OUTER * 2)
-container_h = SCREEN_H - (BAR_HEIGHT + GAP_OUTER * 2)
+# Shared Aesthetics
+DEPTH = 5  # Recursion depth
+COLOR_LINE = (80, 80, 80)  # Grey lines
+COLOR_BG = (10, 10, 10)  # Dark background
 
 
-# ================= RECURSIVE FUNCTION =================
-def draw_lines_recursive(x, y, w, h, level):
+# ================= RECURSIVE DRAWING FUNCTION =================
+def draw_recursive(draw, x, y, w, h, level, line_width, color):
     if level == 0:
         return
 
-    # Calculate the exact center of the current container
     mid_x = x + (w / 2)
     mid_y = y + (h / 2)
 
-    # --- Draw Vertical Split Line ---
-    # Draws a line from the top to bottom of the CURRENT section
-    draw.line([(mid_x, y), (mid_x, y + h)], fill=LINE_COLOR, width=LINE_WIDTH)
+    # Vertical Split Line
+    draw.line([(mid_x, y), (mid_x, y + h)], fill=color, width=line_width)
 
-    # --- Draw Horizontal Split Line ---
-    # Draws a line from left to right of the CURRENT section
-    draw.line([(x, mid_y), (x + w, mid_y)], fill=LINE_COLOR, width=LINE_WIDTH)
+    # Horizontal Split Line
+    draw.line([(x, mid_y), (x + w, mid_y)], fill=color, width=line_width)
 
-    # --- RECURSE ---
-    # Split the area into 4 sub-quadrants and repeat
+    # Recurse
     new_w = w / 2
     new_h = h / 2
 
-    # Top-Left
-    draw_lines_recursive(x, y, new_w, new_h, level - 1)
-    # Top-Right
-    draw_lines_recursive(x + new_w, y, new_w, new_h, level - 1)
-    # Bottom-Left
-    draw_lines_recursive(x, y + new_h, new_w, new_h, level - 1)
-    # Bottom-Right
-    draw_lines_recursive(x + new_w, y + new_h, new_w, new_h, level - 1)
+    draw_recursive(draw, x, y, new_w, new_h, level - 1, line_width, color)
+    draw_recursive(draw, x + new_w, y, new_w, new_h, level - 1, line_width, color)
+    draw_recursive(draw, x, y + new_h, new_w, new_h, level - 1, line_width, color)
+    draw_recursive(
+        draw, x + new_w, y + new_h, new_w, new_h, level - 1, line_width, color
+    )
 
 
-# ================= EXECUTE =================
-print(f"Generating line grid for area: {container_w}x{container_h}...")
-draw_lines_recursive(container_x, container_y, container_w, container_h, DEPTH)
+# ================= MAIN LOOP =================
+for m in MONITORS:
+    print(f"Processing {m['name']}...")
 
-filename = "recursive_lines_wallpaper.png"
-image.save(filename)
-print(f"Done! Saved to {filename}")
+    # 1. Calculate Physical Dimensions
+    # We round to ensure pixel-perfect integer coordinates
+    scale = m["scale"]
+    bar_px = int(m["bar_logical_height"] * scale)
+    gap_px = int(m["gap_logical"] * scale)
+
+    # Calculate Line Thickness
+    # We scale the line thickness too so it looks visually similar on both screens
+    line_width = int(m["line_width_base"] * scale)
+    if line_width < 1:
+        line_width = 1
+
+    # 2. Define the "Tiling Container" area
+    # This is the area where windows actually live
+    container_x = gap_px
+    container_y = bar_px + gap_px
+    container_w = m["width"] - (gap_px * 2)
+    container_h = m["height"] - (bar_px + (gap_px * 2))
+
+    # 3. Create Image
+    img = Image.new("RGB", (m["width"], m["height"]), COLOR_BG)
+    draw = ImageDraw.Draw(img)
+
+    # 4. Draw
+    print(
+        f"  - Container Area: {container_w}x{container_h} (Offset: {container_x}, {container_y})"
+    )
+    draw_recursive(
+        draw,
+        container_x,
+        container_y,
+        container_w,
+        container_h,
+        DEPTH,
+        line_width,
+        COLOR_LINE,
+    )
+
+    # 5. Save
+    filename = f"wallpaper_{m['name']}.png"
+    img.save(filename)
+    print(f"  - Saved to {filename}")
+
+print("\nAll Done! Move these files to your wallpaper folder.")
