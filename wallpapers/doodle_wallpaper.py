@@ -29,6 +29,9 @@ RANDOM_SEED = None  # Set to None for truly random, or a number for reproducible
 FILL_PROBABILITY = 0.5  # Probability (0-1) that a cell will be filled
 CORNER_RADIUS = 20  # Corner radius for rounded rectangles
 MAX_MERGE_SIZE = 3  # Maximum size of merged cells (1 = no merging, 2 = 2x2, 3 = 3x3, etc.)
+RENDER_SCALE = 4  # Render at higher resolution and downsample for smoother edges
+DRAW_GRID_LINES = False  # Set to True to draw grid lines for alignment verification
+SHAPE_MARGIN = 0.5  # Margin multiplier for shapes (0.5 = half gap, 1.0 = full gap, etc.)
 
 # Color Palette (RGB tuples)
 COLOR_PALETTE = [
@@ -44,7 +47,7 @@ COLOR_BG = (0, 0, 0)  # Pure Black Background
 
 
 # ================= RECURSIVE SHAPE GENERATION =================
-def draw_recursive_shapes(draw, x, y, w, h, level, min_level, padding, filled_cells, container_x, container_y, container_w, container_h):
+def draw_recursive_shapes(draw, x, y, w, h, level, min_level, padding, filled_cells, container_x, container_y, container_w, container_h, corner_radius):
     """
     Recursively subdivide space and randomly fill cells with rounded rectangles.
     Cells can be merged to create larger shapes. Prevents overlapping shapes and merging beyond boundaries.
@@ -110,9 +113,12 @@ def draw_recursive_shapes(draw, x, y, w, h, level, min_level, padding, filled_ce
                 y2 = int(y + merged_h - padding)
                 
                 if x2 > x1 and y2 > y1:  # Only draw if there's space
+                    radius = min(int(corner_radius), (x2 - x1) // 2, (y2 - y1) // 2)
+                    if radius < 0:
+                        radius = 0
                     draw.rounded_rectangle(
                         [(x1, y1), (x2, y2)],
-                        radius=CORNER_RADIUS,
+                        radius=radius,
                         fill=color
                     )
         return
@@ -123,11 +129,20 @@ def draw_recursive_shapes(draw, x, y, w, h, level, min_level, padding, filled_ce
     new_w = w / 2
     new_h = h / 2
     
+    # Draw grid lines if enabled (for debugging)
+    if DRAW_GRID_LINES:
+        line_color = (53, 53, 53)  # Dark gray
+        line_width = max(1, int(2 * RENDER_SCALE))
+        # Vertical line
+        draw.line([(mid_x, y), (mid_x, y + h)], fill=line_color, width=line_width)
+        # Horizontal line
+        draw.line([(x, mid_y), (x + w, mid_y)], fill=line_color, width=line_width)
+    
     # Recurse into four quadrants
-    draw_recursive_shapes(draw, x, y, new_w, new_h, level - 1, min_level, padding, filled_cells, container_x, container_y, container_w, container_h)
-    draw_recursive_shapes(draw, mid_x, y, new_w, new_h, level - 1, min_level, padding, filled_cells, container_x, container_y, container_w, container_h)
-    draw_recursive_shapes(draw, x, mid_y, new_w, new_h, level - 1, min_level, padding, filled_cells, container_x, container_y, container_w, container_h)
-    draw_recursive_shapes(draw, mid_x, mid_y, new_w, new_h, level - 1, min_level, padding, filled_cells, container_x, container_y, container_w, container_h)
+    draw_recursive_shapes(draw, x, y, new_w, new_h, level - 1, min_level, padding, filled_cells, container_x, container_y, container_w, container_h, corner_radius)
+    draw_recursive_shapes(draw, mid_x, y, new_w, new_h, level - 1, min_level, padding, filled_cells, container_x, container_y, container_w, container_h, corner_radius)
+    draw_recursive_shapes(draw, x, mid_y, new_w, new_h, level - 1, min_level, padding, filled_cells, container_x, container_y, container_w, container_h, corner_radius)
+    draw_recursive_shapes(draw, mid_x, mid_y, new_w, new_h, level - 1, min_level, padding, filled_cells, container_x, container_y, container_w, container_h, corner_radius)
 
 
 # ================= MAIN LOOP =================
@@ -138,24 +153,34 @@ if RANDOM_SEED is not None:
 for m in MONITORS:
     print(f"Processing {m['name']}...")
 
-    # 1. Calculate Physical Dimensions
-    # We round to ensure pixel-perfect integer coordinates
+    # 1. Calculate Physical Dimensions at logical resolution first
     scale = m["scale"]
-    bar_px = int(m["bar_logical_height"] * scale)
-    gap_px = int(m["gap_logical"] * scale)
+    bar_px_logical = int(m["bar_logical_height"] * scale)
+    gap_px_logical = int(m["gap_logical"] * scale)
 
-    # Calculate padding for shapes
-    padding = int(gap_px * 0.8)
+    # Define the "Tiling Container" area at logical resolution
+    container_x_logical = gap_px_logical
+    container_y_logical = bar_px_logical + gap_px_logical
+    container_w_logical = m["width"] - (gap_px_logical * 2)
+    container_h_logical = m["height"] - (bar_px_logical + (gap_px_logical * 2))
 
-    # 2. Define the "Tiling Container" area
-    # This is the area where windows actually live
-    container_x = gap_px
-    container_y = bar_px + gap_px
-    container_w = m["width"] - (gap_px * 2)
-    container_h = m["height"] - (bar_px + (gap_px * 2))
+    # Now scale everything for high-resolution rendering
+    bar_px = bar_px_logical * RENDER_SCALE
+    gap_px = gap_px_logical * RENDER_SCALE
+    container_x = container_x_logical * RENDER_SCALE
+    container_y = container_y_logical * RENDER_SCALE
+    container_w = container_w_logical * RENDER_SCALE
+    container_h = container_h_logical * RENDER_SCALE
 
-    # 3. Create Image
-    img = Image.new("RGB", (m["width"], m["height"]), COLOR_BG)
+    # Calculate padding for shapes based on margin parameter
+    padding = max(1, int(gap_px * SHAPE_MARGIN))
+
+    # 3. Create Image at higher resolution
+    img = Image.new(
+        "RGB",
+        (int(m["width"] * RENDER_SCALE), int(m["height"] * RENDER_SCALE)),
+        COLOR_BG,
+    )
     draw = ImageDraw.Draw(img)
 
     # 4. Draw recursive shapes
@@ -163,6 +188,7 @@ for m in MONITORS:
         f"  - Container Area: {container_w}x{container_h} (Offset: {container_x}, {container_y})"
     )
     filled_cells = set()
+    corner_radius = max(1, int(CORNER_RADIUS * scale * RENDER_SCALE))
     draw_recursive_shapes(
         draw,
         container_x,
@@ -177,9 +203,13 @@ for m in MONITORS:
         container_y,
         container_w,
         container_h,
+        corner_radius,
     )
 
-    # 5. Save
+    # 5. Downsample to target resolution for smooth edges
+    img = img.resize((m["width"], m["height"]), resample=Image.Resampling.LANCZOS)
+
+    # 6. Save
     filename = f"wallpaper_{m['name']}.png"
     img.save(filename)
     print(f"  - Saved to {filename}")
