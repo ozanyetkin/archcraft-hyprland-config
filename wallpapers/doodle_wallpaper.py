@@ -28,6 +28,7 @@ MAX_DEPTH = 6  # Maximum recursion depth (larger shapes)
 RANDOM_SEED = 42  # Set to None for truly random, or a number for reproducible results
 FILL_PROBABILITY = 0.7  # Probability (0-1) that a cell will be filled
 CORNER_RADIUS = 20  # Corner radius for rounded rectangles
+MAX_MERGE_SIZE = 3  # Maximum size of merged cells (1 = no merging, 2 = 2x2, 3 = 3x3, etc.)
 
 # Color Palette (RGB tuples)
 COLOR_PALETTE = [
@@ -43,9 +44,10 @@ COLOR_BG = (0, 0, 0)  # Pure Black Background
 
 
 # ================= RECURSIVE SHAPE GENERATION =================
-def draw_recursive_shapes(draw, x, y, w, h, level, min_level, padding):
+def draw_recursive_shapes(draw, x, y, w, h, level, min_level, padding, filled_cells, container_x, container_y, container_w, container_h):
     """
     Recursively subdivide space and randomly fill cells with rounded rectangles.
+    Cells can be merged to create larger shapes. Prevents overlapping shapes and merging beyond boundaries.
     
     Args:
         draw: ImageDraw object
@@ -54,23 +56,64 @@ def draw_recursive_shapes(draw, x, y, w, h, level, min_level, padding):
         level: Current recursion depth
         min_level: Minimum depth to stop recursing
         padding: Padding between shapes
+        filled_cells: Set of filled cell coordinates to prevent overlaps
+        container_x, container_y, container_w, container_h: Container boundaries
     """
     if level < min_level:
-        # Base case: draw a filled rounded rectangle
+        # Base case: decide whether to fill and potentially merge
+        cell_key = (int(x), int(y), int(w), int(h))
+        
+        # Skip if already filled
+        if cell_key in filled_cells:
+            return
+        
         if random.random() < FILL_PROBABILITY:
-            color = random.choice(COLOR_PALETTE)
-            # Add padding to the shape
-            x1 = int(x + padding)
-            y1 = int(y + padding)
-            x2 = int(x + w - padding)
-            y2 = int(y + h - padding)
+            # Randomly decide merge size (1 means no merge, 2 means 2x2, etc.)
+            merge_size = random.randint(1, MAX_MERGE_SIZE)
             
-            if x2 > x1 and y2 > y1:  # Only draw if there's space
-                draw.rounded_rectangle(
-                    [(x1, y1), (x2, y2)],
-                    radius=CORNER_RADIUS,
-                    fill=color
-                )
+            # Calculate merged dimensions
+            merged_w = w * merge_size
+            merged_h = h * merge_size
+            
+            # Check if merged area would exceed container boundaries
+            merged_x2 = x + merged_w
+            merged_y2 = y + merged_h
+            container_x2 = container_x + container_w
+            container_y2 = container_y + container_h
+            
+            exceeds_boundary = (merged_x2 > container_x2) or (merged_y2 > container_y2)
+            
+            # Check if merged area would overlap with filled cells
+            can_merge = not exceeds_boundary
+            if can_merge:
+                for i in range(merge_size):
+                    for j in range(merge_size):
+                        check_key = (int(x + w * i), int(y + h * j), int(w), int(h))
+                        if check_key in filled_cells:
+                            can_merge = False
+                            break
+                    if not can_merge:
+                        break
+            
+            if can_merge:
+                # Mark all merged cells as filled
+                for i in range(merge_size):
+                    for j in range(merge_size):
+                        filled_cells.add((int(x + w * i), int(y + h * j), int(w), int(h)))
+                
+                color = random.choice(COLOR_PALETTE)
+                # Add padding to the shape
+                x1 = int(x + padding)
+                y1 = int(y + padding)
+                x2 = int(x + merged_w - padding)
+                y2 = int(y + merged_h - padding)
+                
+                if x2 > x1 and y2 > y1:  # Only draw if there's space
+                    draw.rounded_rectangle(
+                        [(x1, y1), (x2, y2)],
+                        radius=CORNER_RADIUS,
+                        fill=color
+                    )
         return
     
     # Recursive case: subdivide and recurse
@@ -80,10 +123,10 @@ def draw_recursive_shapes(draw, x, y, w, h, level, min_level, padding):
     new_h = h / 2
     
     # Recurse into four quadrants
-    draw_recursive_shapes(draw, x, y, new_w, new_h, level - 1, min_level, padding)
-    draw_recursive_shapes(draw, mid_x, y, new_w, new_h, level - 1, min_level, padding)
-    draw_recursive_shapes(draw, x, mid_y, new_w, new_h, level - 1, min_level, padding)
-    draw_recursive_shapes(draw, mid_x, mid_y, new_w, new_h, level - 1, min_level, padding)
+    draw_recursive_shapes(draw, x, y, new_w, new_h, level - 1, min_level, padding, filled_cells, container_x, container_y, container_w, container_h)
+    draw_recursive_shapes(draw, mid_x, y, new_w, new_h, level - 1, min_level, padding, filled_cells, container_x, container_y, container_w, container_h)
+    draw_recursive_shapes(draw, x, mid_y, new_w, new_h, level - 1, min_level, padding, filled_cells, container_x, container_y, container_w, container_h)
+    draw_recursive_shapes(draw, mid_x, mid_y, new_w, new_h, level - 1, min_level, padding, filled_cells, container_x, container_y, container_w, container_h)
 
 
 # ================= MAIN LOOP =================
@@ -118,6 +161,7 @@ for m in MONITORS:
     print(
         f"  - Container Area: {container_w}x{container_h} (Offset: {container_x}, {container_y})"
     )
+    filled_cells = set()
     draw_recursive_shapes(
         draw,
         container_x,
@@ -127,6 +171,11 @@ for m in MONITORS:
         MAX_DEPTH,
         MIN_DEPTH,
         padding,
+        filled_cells,
+        container_x,
+        container_y,
+        container_w,
+        container_h,
     )
 
     # 5. Save
