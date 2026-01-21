@@ -9,16 +9,16 @@ MONITORS = [
         "width": 3840,
         "height": 2160,
         "scale": 1.5,
-        "bar_logical_height": 38,  # From "reserved: 0 38 0 0"
-        "gap_logical": 12,  # 12px visual gap (consistent across setup)
-        "line_width_base": 2,  # Base thickness of lines
+        "bar_logical_height": 48,
+        "gap_logical": 12,
+        "line_width_base": 2,
     },
     {
         "name": "eDP-1",
         "width": 1920,
         "height": 1200,
         "scale": 1.0,
-        "bar_logical_height": 38,  # From "reserved: 0 38 0 0"
+        "bar_logical_height": 32,
         "gap_logical": 12,
         "line_width_base": 2,
     },
