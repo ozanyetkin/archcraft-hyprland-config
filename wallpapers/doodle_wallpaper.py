@@ -26,12 +26,15 @@ MONITORS = [
 MIN_DEPTH = 2  # Minimum recursion depth (smaller shapes)
 MAX_DEPTH = 6  # Maximum recursion depth (larger shapes)
 RANDOM_SEED = None  # Set to None for truly random, or a number for reproducible results
-FILL_PROBABILITY = 0.5  # Probability (0-1) that a cell will be filled
-CORNER_RADIUS = 20  # Corner radius for rounded rectangles
+FILL_PROBABILITY = 0.4  # Probability (0-1) that a cell will be filled
+CORNER_RADIUS = 12  # Corner radius for rounded rectangles
 MAX_MERGE_SIZE = 3  # Maximum size of merged cells (1 = no merging, 2 = 2x2, 3 = 3x3, etc.)
 RENDER_SCALE = 4  # Render at higher resolution and downsample for smoother edges
 DRAW_GRID_LINES = True  # Set to True to draw grid lines for alignment verification
-SHAPE_MARGIN = 0.5  # Margin multiplier for shapes (0.5 = half gap, 1.0 = full gap, etc.)
+SHAPE_PADDING = 6  # Padding for shapes in pixels
+LINE_THICKNESS = 12  # Thickness of lines in pixels
+LINE_ROUNDED_ENDS = True  # Set to True to draw rounded end caps on lines
+LINE_EXTEND_ENDS = True  # Set to True to extend lines by radius amount
 GRID_LINE_COLOR = (0, 0, 0)  # Color for grid lines (default: black)
 
 # Color Palette (RGB tuples)
@@ -142,22 +145,31 @@ def draw_recursive_shapes(draw, x, y, w, h, level, min_level, padding, filled_ce
     
     # Draw grid lines if enabled (for debugging)
     if DRAW_GRID_LINES:
-        line_width = int(gap_px)  # Match gap width
+        line_width = int(LINE_THICKNESS * RENDER_SCALE)
         radius = line_width // 2
         
-        # Vertical line with rounded ends (extends to merge with caps)
-        draw.line([(mid_x, y), (mid_x, y + h)], fill=GRID_LINE_COLOR, width=line_width)
-        # Top circle cap centered at intersection
-        draw.ellipse([(mid_x - radius, y - radius), (mid_x + radius, y + radius)], fill=GRID_LINE_COLOR)
-        # Bottom circle cap centered at intersection
-        draw.ellipse([(mid_x - radius, y + h - radius), (mid_x + radius, y + h + radius)], fill=GRID_LINE_COLOR)
+        # Calculate line extension based on parameter
+        extend = radius if LINE_EXTEND_ENDS else 0
         
-        # Horizontal line with rounded ends (extends to merge with caps)
-        draw.line([(x, mid_y), (x + w, mid_y)], fill=GRID_LINE_COLOR, width=line_width)
-        # Left circle cap centered at intersection
-        draw.ellipse([(x - radius, mid_y - radius), (x + radius, mid_y + radius)], fill=GRID_LINE_COLOR)
-        # Right circle cap centered at intersection
-        draw.ellipse([(x + w - radius, mid_y - radius), (x + w + radius, mid_y + radius)], fill=GRID_LINE_COLOR)
+        # Cap offset: if not extending, caps are at line start/end; if extending, caps are beyond
+        cap_offset = radius if LINE_EXTEND_ENDS else 0
+
+        # Vertical line
+        draw.line([(mid_x, y - extend), (mid_x, y + h + extend)], fill=GRID_LINE_COLOR, width=line_width)
+        
+        # Horizontal line
+        draw.line([(x - extend, mid_y), (x + w + extend, mid_y)], fill=GRID_LINE_COLOR, width=line_width)
+        
+        # Draw rounded end caps if enabled
+        if LINE_ROUNDED_ENDS:
+            # Top circle cap
+            draw.ellipse([(mid_x - radius, y - radius - cap_offset), (mid_x + radius, y + radius - cap_offset)], fill=GRID_LINE_COLOR)
+            # Bottom circle cap
+            draw.ellipse([(mid_x - radius, y + h - radius + cap_offset), (mid_x + radius, y + h + radius + cap_offset)], fill=GRID_LINE_COLOR)
+            # Left circle cap
+            draw.ellipse([(x - radius - cap_offset, mid_y - radius), (x + radius - cap_offset, mid_y + radius)], fill=GRID_LINE_COLOR)
+            # Right circle cap
+            draw.ellipse([(x + w - radius + cap_offset, mid_y - radius), (x + w + radius + cap_offset, mid_y + radius)], fill=GRID_LINE_COLOR)
     
     # Recurse into four quadrants
     draw_recursive_shapes(draw, x, y, new_w, new_h, level - 1, min_level, padding, filled_cells, container_x, container_y, container_w, container_h, corner_radius)
@@ -193,8 +205,8 @@ for m in MONITORS:
     container_w = container_w_logical * RENDER_SCALE
     container_h = container_h_logical * RENDER_SCALE
 
-    # Calculate padding for shapes based on margin parameter
-    padding = max(1, int(gap_px * SHAPE_MARGIN))
+    # Calculate padding for shapes and line thickness (at high resolution)
+    padding = int(SHAPE_PADDING * RENDER_SCALE)
 
     # 3. Create Image at higher resolution
     img = Image.new(
