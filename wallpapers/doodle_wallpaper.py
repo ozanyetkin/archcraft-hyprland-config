@@ -25,8 +25,8 @@ MONITORS = [
 # Shared Aesthetics
 MIN_DEPTH = 2  # Minimum recursion depth (smaller shapes)
 MAX_DEPTH = 6  # Maximum recursion depth (larger shapes)
-RANDOM_SEED = 42  # Set to None for truly random, or a number for reproducible results
-FILL_PROBABILITY = 0.7  # Probability (0-1) that a cell will be filled
+RANDOM_SEED = None  # Set to None for truly random, or a number for reproducible results
+FILL_PROBABILITY = 0.5  # Probability (0-1) that a cell will be filled
 CORNER_RADIUS = 20  # Corner radius for rounded rectangles
 MAX_MERGE_SIZE = 3  # Maximum size of merged cells (1 = no merging, 2 = 2x2, 3 = 3x3, etc.)
 
@@ -68,12 +68,13 @@ def draw_recursive_shapes(draw, x, y, w, h, level, min_level, padding, filled_ce
             return
         
         if random.random() < FILL_PROBABILITY:
-            # Randomly decide merge size (1 means no merge, 2 means 2x2, etc.)
-            merge_size = random.randint(1, MAX_MERGE_SIZE)
+            # Randomly decide merge size for width and height independently
+            merge_w = random.randint(1, MAX_MERGE_SIZE)
+            merge_h = random.randint(1, MAX_MERGE_SIZE)
             
             # Calculate merged dimensions
-            merged_w = w * merge_size
-            merged_h = h * merge_size
+            merged_w = w * merge_w
+            merged_h = h * merge_h
             
             # Check if merged area would exceed container boundaries
             merged_x2 = x + merged_w
@@ -86,8 +87,8 @@ def draw_recursive_shapes(draw, x, y, w, h, level, min_level, padding, filled_ce
             # Check if merged area would overlap with filled cells
             can_merge = not exceeds_boundary
             if can_merge:
-                for i in range(merge_size):
-                    for j in range(merge_size):
+                for i in range(merge_w):
+                    for j in range(merge_h):
                         check_key = (int(x + w * i), int(y + h * j), int(w), int(h))
                         if check_key in filled_cells:
                             can_merge = False
@@ -97,8 +98,8 @@ def draw_recursive_shapes(draw, x, y, w, h, level, min_level, padding, filled_ce
             
             if can_merge:
                 # Mark all merged cells as filled
-                for i in range(merge_size):
-                    for j in range(merge_size):
+                for i in range(merge_w):
+                    for j in range(merge_h):
                         filled_cells.add((int(x + w * i), int(y + h * j), int(w), int(h)))
                 
                 color = random.choice(COLOR_PALETTE)
