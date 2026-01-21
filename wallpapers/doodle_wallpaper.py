@@ -30,7 +30,7 @@ FILL_PROBABILITY = 0.5  # Probability (0-1) that a cell will be filled
 CORNER_RADIUS = 20  # Corner radius for rounded rectangles
 MAX_MERGE_SIZE = 3  # Maximum size of merged cells (1 = no merging, 2 = 2x2, 3 = 3x3, etc.)
 RENDER_SCALE = 4  # Render at higher resolution and downsample for smoother edges
-DRAW_GRID_LINES = False  # Set to True to draw grid lines for alignment verification
+DRAW_GRID_LINES = True  # Set to True to draw grid lines for alignment verification
 SHAPE_MARGIN = 0.5  # Margin multiplier for shapes (0.5 = half gap, 1.0 = full gap, etc.)
 
 # Color Palette (RGB tuples)
@@ -107,10 +107,20 @@ def draw_recursive_shapes(draw, x, y, w, h, level, min_level, padding, filled_ce
                 
                 color = random.choice(COLOR_PALETTE)
                 # Add padding to the shape
-                x1 = int(x + padding)
-                y1 = int(y + padding)
-                x2 = int(x + merged_w - padding)
-                y2 = int(y + merged_h - padding)
+                is_left_edge = abs(x - container_x) < 1
+                is_right_edge = abs((x + merged_w) - (container_x + container_w)) < 1
+                is_top_edge = abs(y - container_y) < 1
+                is_bottom_edge = abs((y + merged_h) - (container_y + container_h)) < 1
+
+                px_left = 0 if is_left_edge else padding
+                px_right = 0 if is_right_edge else padding
+                py_top = 0 if is_top_edge else padding
+                py_bottom = 0 if is_bottom_edge else padding
+
+                x1 = int(x + px_left)
+                y1 = int(y + py_top)
+                x2 = int(x + merged_w - px_right)
+                y2 = int(y + merged_h - py_bottom)
                 
                 if x2 > x1 and y2 > y1:  # Only draw if there's space
                     radius = min(int(corner_radius), (x2 - x1) // 2, (y2 - y1) // 2)
