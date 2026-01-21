@@ -32,6 +32,7 @@ MAX_MERGE_SIZE = 3  # Maximum size of merged cells (1 = no merging, 2 = 2x2, 3 =
 RENDER_SCALE = 4  # Render at higher resolution and downsample for smoother edges
 DRAW_GRID_LINES = True  # Set to True to draw grid lines for alignment verification
 SHAPE_MARGIN = 0.5  # Margin multiplier for shapes (0.5 = half gap, 1.0 = full gap, etc.)
+GRID_LINE_COLOR = (0, 0, 0)  # Color for grid lines (default: black)
 
 # Color Palette (RGB tuples)
 COLOR_PALETTE = [
@@ -141,12 +142,22 @@ def draw_recursive_shapes(draw, x, y, w, h, level, min_level, padding, filled_ce
     
     # Draw grid lines if enabled (for debugging)
     if DRAW_GRID_LINES:
-        line_color = (53, 53, 53)  # Dark gray
-        line_width = max(1, int(2 * RENDER_SCALE))
-        # Vertical line
-        draw.line([(mid_x, y), (mid_x, y + h)], fill=line_color, width=line_width)
-        # Horizontal line
-        draw.line([(x, mid_y), (x + w, mid_y)], fill=line_color, width=line_width)
+        line_width = int(gap_px)  # Match gap width
+        radius = line_width // 2
+        
+        # Vertical line with rounded ends (extends to merge with caps)
+        draw.line([(mid_x, y), (mid_x, y + h)], fill=GRID_LINE_COLOR, width=line_width)
+        # Top circle cap centered at intersection
+        draw.ellipse([(mid_x - radius, y - radius), (mid_x + radius, y + radius)], fill=GRID_LINE_COLOR)
+        # Bottom circle cap centered at intersection
+        draw.ellipse([(mid_x - radius, y + h - radius), (mid_x + radius, y + h + radius)], fill=GRID_LINE_COLOR)
+        
+        # Horizontal line with rounded ends (extends to merge with caps)
+        draw.line([(x, mid_y), (x + w, mid_y)], fill=GRID_LINE_COLOR, width=line_width)
+        # Left circle cap centered at intersection
+        draw.ellipse([(x - radius, mid_y - radius), (x + radius, mid_y + radius)], fill=GRID_LINE_COLOR)
+        # Right circle cap centered at intersection
+        draw.ellipse([(x + w - radius, mid_y - radius), (x + w + radius, mid_y + radius)], fill=GRID_LINE_COLOR)
     
     # Recurse into four quadrants
     draw_recursive_shapes(draw, x, y, new_w, new_h, level - 1, min_level, padding, filled_cells, container_x, container_y, container_w, container_h, corner_radius)
