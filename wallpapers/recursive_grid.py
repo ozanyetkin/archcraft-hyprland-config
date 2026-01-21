@@ -9,7 +9,7 @@ MONITORS = [
         "width": 3840,
         "height": 2160,
         "scale": 1.5,
-        "bar_logical_height": 48,
+        "bar_logical_height": 38,
         "gap_logical": 12,
         "line_width_base": 2,
     },
@@ -18,7 +18,7 @@ MONITORS = [
         "width": 1920,
         "height": 1200,
         "scale": 1.0,
-        "bar_logical_height": 32,
+        "bar_logical_height": 38,
         "gap_logical": 12,
         "line_width_base": 2,
     },
@@ -26,8 +26,8 @@ MONITORS = [
 
 # Shared Aesthetics
 DEPTH = 5  # Recursion depth
-COLOR_LINE = (80, 80, 80)  # Grey lines
-COLOR_BG = (10, 10, 10)  # Dark background
+COLOR_LINE = (53, 53, 53)  # #353535
+COLOR_BG = (0, 0, 0)  # Pure Black Background
 
 
 # ================= RECURSIVE DRAWING FUNCTION =================
