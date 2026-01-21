@@ -25,7 +25,7 @@ MONITORS = [
 ]
 
 # Shared Aesthetics
-DEPTH = 5  # Recursion depth
+DEPTH = 6  # Recursion depth
 COLOR_LINE = (53, 53, 53)  # #353535
 COLOR_BG = (0, 0, 0)  # Pure Black Background
 
