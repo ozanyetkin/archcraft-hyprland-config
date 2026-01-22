@@ -25,7 +25,7 @@ color14='#89ddff'
 color15='#ffffff'
 
 # Wallpaper
-wallpaper="$HOME/.config/hyprcat/wallpapers/fauxcode-wallpaper.png"
+wallpaper="$HOME/.config/hyprcat/wallpapers/wallpaper.png"
 
 # GTK Theme
 gtk_theme='Yetkin-Material'
