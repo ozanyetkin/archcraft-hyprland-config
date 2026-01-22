@@ -27,7 +27,7 @@ MIN_DEPTH = 2  # Minimum recursion depth (smaller shapes)
 MAX_DEPTH = 6  # Maximum recursion depth (larger shapes)
 RANDOM_SEED = None  # Set to None for truly random, or a number for reproducible results
 FILL_PROBABILITY = 0.4  # Probability (0-1) that a cell will be filled
-CORNER_RADIUS = 12  # Corner radius for rounded rectangles
+CORNER_RADIUS = 18  # Corner radius for rounded rectangles
 MAX_MERGE_SIZE = 3  # Maximum size of merged cells (1 = no merging, 2 = 2x2, 3 = 3x3, etc.)
 RENDER_SCALE = 4  # Render at higher resolution and downsample for smoother edges
 DRAW_GRID_LINES = True  # Set to True to draw grid lines for alignment verification
@@ -145,7 +145,7 @@ def draw_recursive_shapes(draw, x, y, w, h, level, min_level, padding, filled_ce
     
     # Draw grid lines if enabled (for debugging)
     if DRAW_GRID_LINES:
-        line_width = int(LINE_THICKNESS * RENDER_SCALE)
+        line_width = int(line_thickness * RENDER_SCALE)
         radius = line_width // 2
         
         # Calculate line extension based on parameter
@@ -206,7 +206,9 @@ for m in MONITORS:
     container_h = container_h_logical * RENDER_SCALE
 
     # Calculate padding for shapes and line thickness (at high resolution)
-    padding = int(SHAPE_PADDING * RENDER_SCALE)
+    padding = int(SHAPE_PADDING * scale * RENDER_SCALE)
+    line_thickness = int(LINE_THICKNESS * scale)
+    corner_radius = max(1, int(CORNER_RADIUS * scale * RENDER_SCALE))
 
     # 3. Create Image at higher resolution
     img = Image.new(
@@ -221,7 +223,6 @@ for m in MONITORS:
         f"  - Container Area: {container_w}x{container_h} (Offset: {container_x}, {container_y})"
     )
     filled_cells = set()
-    corner_radius = max(1, int(CORNER_RADIUS * scale * RENDER_SCALE))
     draw_recursive_shapes(
         draw,
         container_x,
